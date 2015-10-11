@@ -1,9 +1,10 @@
 # encoding: utf-8
 '''
-This package uses the EDICT and KANJIDIC dictionary files. (see http://www.csse.monash.edu.au/~jwb/kanjidic.html)
-These files are the property of the Electronic Dictionary Research and Development Group,
-and are used in conformance with the Group's licence.
+This package uses the KANJIDIC dictionary file. (see http://www.csse.monash.edu.au/~jwb/kanjidic.html)
+Theis file is the property of the Electronic Dictionary Research and Development Group,
+and is used in conformance with the Group's licence.
 '''
+
 import os.path
 import pickle
 import xml.etree.ElementTree as ET
