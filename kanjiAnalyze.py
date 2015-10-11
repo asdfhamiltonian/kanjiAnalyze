@@ -9,7 +9,6 @@ import pickle
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
 from math import sqrt
-import matplotlib.pyplot as plt
 
 tree = ET.parse('kanjidic2.xml')
 root = tree.getroot()
