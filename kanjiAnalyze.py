@@ -122,7 +122,6 @@ def strip(text):
     return text
 
 def gradeStats(text):
-    text = strip(text)
     charArray = []
     for char in text:
         if char in masterDictionary:
@@ -133,7 +132,6 @@ def gradeStats(text):
     return [avg(charArray), variance(charArray), sd(charArray), len(charArray)]
 
 def jlptStats(text):
-    text = strip(text)
     charArray = []
     for char in text:
         if (char in masterDictionary) and (masterDictionary[char]["jlpt"] != 'NA'):
@@ -144,7 +142,6 @@ def jlptStats(text):
     return [avg(charArray), variance(charArray), sd(charArray), len(charArray)]
 
 def frequncyStats(text):
-    text = strip(text)
     charArray = []
     for char in text:
         if (char in masterDictionary) and (masterDictionary[char]["freq"] != "NA"):
@@ -155,12 +152,14 @@ def frequncyStats(text):
     return [avg(charArray), variance(charArray), sd(charArray), len(charArray)]
 
 marsArticle = open("火星.txt", "r").read()
+marsArticle = strip(marsArticle)
 print("Article about Mars from Japanese Wikipedia: \n",
       "Grade Level Stats: ", gradeStats(marsArticle), "\n",
       "JLPT Level Stats: ", jlptStats(marsArticle), "\n",
       "Character Frequency Stats: ", frequncyStats(marsArticle), "\n\n")
 
 historyArticle = open("戦国時代.txt", "r").read()
+historyArticle = strip(historyArticle)
 print("Article on the Warring-States Period from Japanese Wikipedia: \n"
       "Grade Level Stats: ", gradeStats(historyArticle), "\n",
       "JLPT Level Stats: ", jlptStats(historyArticle), "\n",
@@ -194,10 +193,18 @@ print("List of Jinmeiyou Kanji: \n"
       "Character Frequency Stats: ", frequncyStats(jinmeiyouKanji), "\n\n")
 
 nekodearu = open("吾輩は猫である.txt", "r").read()
+nekodearu = strip(nekodearu)
 print("I am Cat by Natsume Soseki: \n"
       "Grade Level Stats: ", gradeStats(nekodearu), "\n",
       "JLPT Level Stats: ", jlptStats(nekodearu), "\n",
       "Character Frequency Stats: ", frequncyStats(nekodearu), "\n\n")
+
+hosomichi = open("奥の細道.txt", "r").read()
+hosomichi = strip(hosomichi)
+print("Oku no Hosomichi by Matsuo Basho: \n"
+      "Grade Level Stats: ", gradeStats(hosomichi), "\n",
+      "JLPT Level Stats: ", jlptStats(hosomichi), "\n",
+      "Character Frequency Stats: ", frequncyStats(hosomichi), "\n\n")
 
 '''
 2998
@@ -225,4 +232,9 @@ Grade Level Stats:  [3.7968692967910815, 6.734580136856841, 2.5951069605811705, 
  JLPT Level Stats:  [2.67897500846153, 1.1186363377423967, 1.0576560583395704, 91591]
  Character Frequency Stats:  [513.2243434701753, 314030.2432863047, 560.384014124515, 93027]
 
+
+Oku no Hosomichi by Matsuo Basho:
+Grade Level Stats:  [4.073037542662116, 8.338997484935302, 2.8877322391342486, 4395]
+ JLPT Level Stats:  [2.5485138786538934, 1.2575352601881864, 1.1213987962309333, 4071]
+ Character Frequency Stats:  [648.3525656183494, 386539.56228114216, 621.723059151856, 4229]
 '''
