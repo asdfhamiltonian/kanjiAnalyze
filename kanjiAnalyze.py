@@ -1,9 +1,10 @@
 # encoding: utf-8
-'''
-This package uses the KANJIDIC dictionary file. (see http://www.csse.monash.edu.au/~jwb/kanjidic.html)
-Theis file is the property of the Electronic Dictionary Research and Development Group,
-and is used in conformance with the Group's licence.
-'''
+"""
+This package uses the KANJIDIC dictionary file.
+This file is the property of the Electronic Dictionary Research and
+Development Group, and is used in conformance with the Group's licence.
+(see http://www.csse.monash.edu.au/~jwb/kanjidic.html)
+"""
 
 import os.path
 import pickle
@@ -45,18 +46,20 @@ if not os.path.isfile("kanjiPickle.p"):
             nanori = []
 
             for child in kanji.find('reading_meaning')[0]:
-                #python seems to behave badly with series of if statements,
-                #preferred this to be set up as if, elif, elif, else
+                """python interpreter seemed to dislike serial if statements,
+                works better if set up as if, elif, elif, else"""
                 if (child.tag == "meaning") and (child.attrib == {}):
                     meaning.append(child.text)
-                elif ("r_type" in child.attrib) and (child.attrib["r_type"] == "ja_on"):
+                elif (("r_type" in child.attrib) and
+                        (child.attrib["r_type"] == "ja_on")):
                     onyomi.append(child.text)
-                elif ("r_type" in child.attrib) and (child.attrib["r_type"] == "ja_kun"):
+                elif (("r_type" in child.attrib) and
+                        (child.attrib["r_type"] == "ja_kun")):
                     kunyomi.append(child.text)
                 else:
                     pass
 
-            #nanori is in a different level of the xml file
+            """nanori is in a different level of the xml file"""
             for child in kanji.find('reading_meaning'):
                 if child.tag == "nanori":
                     nanori.append(child.text)
@@ -75,35 +78,34 @@ else:
 
 print(len(masterDictionary), "\n")
 
-#putting together a list of characters that are not kanji
-kana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖー'
-kana += 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶヷヸヹヺ・ー'
-punct = '。、「」　（）'
-alphaNum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 '
-notKanji = kana + punct + alphaNum
+'''list of non-kanji characters for removal'''
+notKanji = '''ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねの
+はばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖーァアィイゥウェエォオカガキギ
+クグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨ
+ラリルレロヮワヰヱヲンヴヵヶヷヸヹヺ・ー。、「」　（）ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz1234567890'''
 
-#may want to just use numpy in the future.
+'''statistical tests'''
+
+
 def avg(x):
     return sum(x)/len(x)
 
+
 def variance(x):
-    '''
-    returns the variance for a list of numbers
-    '''
+    """returns the variance for a list of numbers"""
     x_bar = avg(x)
     squareDiffList = [(x_i - x_bar)**2 for x_i in x]
     return sum(squareDiffList)/(len(squareDiffList) - 1)
 
+
 def sd(x):
-    '''
-    returns the standard deviation for a list of numbers
-    '''
+    """returns the standard deviation for a list of numbers"""
     return sqrt(variance(x))
 
+
 def correlation(tuplist):
-    '''
-    returns the correlation coefficient of a list of tupples
-    '''
+    """returns the correlation coefficient of a list of tupples"""
     x_list = [item[0] for item in tuplist]
     y_list = [item[1] for item in tuplist]
     x_bar = avg(x_list)
@@ -111,17 +113,23 @@ def correlation(tuplist):
     y_bar = avg(y_list)
     s_y = sd(y_list)
     n = len(tuplist)
-    numerator_list = [(item[0] - x_bar) * (item[1] - y_bar) for item in tuplist]
+    numerator_list = [(item[0] - x_bar) * (item[1] - y_bar) for
+                      item in tuplist]
     r = sum(numerator_list)/((n-1) * s_x * s_y)
     return r
 
+
 def strip(text):
+    """removes non-kanji chars from strings"""
     for char in text:
         if char in notKanji:
             text = text.replace(char, "")
     return text
 
+
 def gradeStats(text):
+    """returns avg, variance, standard dev and N for grade level of
+    kanji in a string"""
     charArray = []
     for char in text:
         if char in masterDictionary:
@@ -131,39 +139,52 @@ def gradeStats(text):
             pass
     return [avg(charArray), variance(charArray), sd(charArray), len(charArray)]
 
+
 def jlptStats(text):
+    """returns avg, variance, standard dev and N for JLPT level of
+    kanji in a string"""
     charArray = []
     for char in text:
-        if (char in masterDictionary) and (masterDictionary[char]["jlpt"] != 'NA'):
+        if ((char in masterDictionary) and
+                (masterDictionary[char]["jlpt"] != 'NA')):
             jlpt = int(masterDictionary[char]["jlpt"])
             charArray.append(jlpt)
         else:
             pass
-    return [avg(charArray), variance(charArray), sd(charArray), len(charArray)]
+    return [avg(charArray), variance(charArray),
+            sd(charArray), len(charArray)]
+
 
 def frequncyStats(text):
+    """returns avg, variance, standard dev and N for usage frequency of
+    kanji in a string"""
     charArray = []
     for char in text:
-        if (char in masterDictionary) and (masterDictionary[char]["freq"] != "NA"):
+        if ((char in masterDictionary) and
+                (masterDictionary[char]["freq"] != "NA")):
             frequency = int(masterDictionary[char]["freq"])
             charArray.append(frequency)
         else:
             pass
-    return [avg(charArray), variance(charArray), sd(charArray), len(charArray)]
+    return [avg(charArray), variance(charArray),
+            sd(charArray), len(charArray)]
+
 
 marsArticle = open("火星.txt", "r").read()
 marsArticle = strip(marsArticle)
-print("Article about Mars from Japanese Wikipedia: \n",
+print("Japanese Wikipedia article about Mars: \n",
       "Grade Level Stats: ", gradeStats(marsArticle), "\n",
       "JLPT Level Stats: ", jlptStats(marsArticle), "\n",
       "Character Frequency Stats: ", frequncyStats(marsArticle), "\n\n")
 
+
 historyArticle = open("戦国時代.txt", "r").read()
 historyArticle = strip(historyArticle)
-print("Article on the Warring-States Period from Japanese Wikipedia: \n"
+print("Japanese Wikipedia article about the Sengoku Period: \n"
       "Grade Level Stats: ", gradeStats(historyArticle), "\n",
       "JLPT Level Stats: ", jlptStats(historyArticle), "\n",
       "Character Frequency Stats: ", frequncyStats(historyArticle), "\n\n")
+
 
 jinmeiyouKanji = '''
 丑 丞 乃 之 乎 也 云 亘‐亙 些 亦 亥 亨 亮 仔 伊 伍 伽 佃 佑 伶 侃 侑 俄 俠 俣 俐 倭 俱 倦 倖 偲 傭 儲 允 兎
@@ -201,40 +222,7 @@ print("I am Cat by Natsume Soseki: \n"
 
 hosomichi = open("奥の細道.txt", "r").read()
 hosomichi = strip(hosomichi)
-print("Oku no Hosomichi by Matsuo Basho: \n"
+print("Oku no Hosomichi by Matsuo Basho: \n",
       "Grade Level Stats: ", gradeStats(hosomichi), "\n",
       "JLPT Level Stats: ", jlptStats(hosomichi), "\n",
       "Character Frequency Stats: ", frequncyStats(hosomichi), "\n\n")
-
-'''
-2998
-
-Article about Mars from Japanese Wikipedia:
- Grade Level Stats:  [3.2952624839948785, 4.035492406750535, 2.008853505547514, 3905]
- JLPT Level Stats:  [2.588628762541806, 0.8973796683747769, 0.9473012553431864, 3887]
- Character Frequency Stats:  [398.62240451166366, 158348.84379534522, 397.93070225272294, 3901]
-
-
-Article on the Warring-States Period from Japanese Wikipedia:
-Grade Level Stats:  [3.854122417455107, 5.450862119606459, 2.3347081444168687, 10358]
- JLPT Level Stats:  [2.4385620273057658, 1.1383910165108666, 1.0669540836000706, 10181]
- Character Frequency Stats:  [400.32424301242236, 210281.84525906038, 458.56498477212625, 10304]
-
-
-List of Jinmeiyou Kanji:
-Grade Level Stats:  [9.0, 0.0, 0.0, 650]
- JLPT Level Stats:  [1.0, 0.0, 0.0, 256]
- Character Frequency Stats:  [2068.5361445783133, 102524.40654460745, 320.19432622176095, 332]
-
-
-I am Cat by Natsume Soseki:
-Grade Level Stats:  [3.7968692967910815, 6.734580136856841, 2.5951069605811705, 95889]
- JLPT Level Stats:  [2.67897500846153, 1.1186363377423967, 1.0576560583395704, 91591]
- Character Frequency Stats:  [513.2243434701753, 314030.2432863047, 560.384014124515, 93027]
-
-
-Oku no Hosomichi by Matsuo Basho:
-Grade Level Stats:  [4.073037542662116, 8.338997484935302, 2.8877322391342486, 4395]
- JLPT Level Stats:  [2.5485138786538934, 1.2575352601881864, 1.1213987962309333, 4071]
- Character Frequency Stats:  [648.3525656183494, 386539.56228114216, 621.723059151856, 4229]
-'''
